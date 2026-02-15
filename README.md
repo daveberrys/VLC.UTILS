@@ -56,4 +56,4 @@
 5. Open the software
 
 > [!CAUTION]
-> Some of the code is made by AI (Gemini 3.0 Flash). But I've taken quiz from them and checked the code and everything is fine. Don't worry about your shit being stolen.
+> Some of the code is made by AI (Gemini 3.0 Flash). But I've taken quiz from them and checked the code and everything is fine. Don't worry about your shit being stolen. The reason why I use LLMs is because of two things. ADHD and short-term memory loss. I struggle with trying to remember things and I need the usage of LLM to help me out on giving me quizzes so I remember and I re-learn it again.
