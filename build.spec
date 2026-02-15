@@ -4,7 +4,7 @@ import os
 from PyInstaller.utils.hooks import collect_all
 
 datas, binaries, existing_hiddenimports = collect_all('textual')
-hiddenimports = existing_hiddenimports + ['pypresence', 'pylast', 'requests', 'termcolor', 'rich', 'rich._unicode_data.unicode17-0-0']
+hiddenimports = existing_hiddenimports + ['pypresence', 'pylast', 'requests', 'termcolor']
 
 block_cipher = None
 

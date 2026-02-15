@@ -6,3 +6,7 @@ __pycache__
 
 build
 dist
+
+desktop.ini
+config.json
+VLC.UTILS.CONFIG.json

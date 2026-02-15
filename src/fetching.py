@@ -12,6 +12,7 @@ def getVlcStatus(password, port, host="localhost"):
                 "title": meta.get('title', 'Unknown Title'),
                 "artist": meta.get('artist', 'Unknown Artist'),
                 "album": meta.get('album', 'Unknown Album'),
+                "lyrics": meta.get('LYRICS', 'Unknown Lyrics'),
                 "position": data.get('time', 0),
                 "length": data.get('length', 0),
                 "state": data.get('state', 'stopped')
