@@ -1,0 +1,60 @@
+name: VLC.UTILS Builder
+on:
+  push:
+    branches:
+      - "**"
+  pull_request:
+    branches:
+      - "**"
+
+env:
+  pythonVersion: 3.14.2
+
+jobs:
+  build:
+    name: Build for ${{ matrix.os-name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            os-name: Linux Ubuntu
+            artifact-path: dist/VLC-UTILS-Linux
+            artifact-name: VLC-UTILS-Linux
+          - os: windows-latest
+            os-name: Windows
+            artifact-path: dist/VLC-UTILS-Windows.exe
+            artifact-name: VLC-UTILS-Windows
+          - os: macos-latest
+            os-name: MacOS
+            artifact-path: dist/VLC-UTILS-MacOS
+            artifact-name: VLC-UTILS-MacOS
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ env.pythonVersion }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.pythonVersion }}
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Compile with PyInstaller
+        run: pyinstaller build.spec
+
+      - name: Rename Build (Windows)
+        if: runner.os == 'Windows'
+        run: move dist\VLC-UTILS.exe ${{ matrix.artifact-path }}
+
+      - name: Rename Build (Linux/macOS)
+        if: runner.os != 'Windows'
+        run: mv dist/VLC-UTILS ${{ matrix.artifact-path }}
+
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact-name }}
+          path: ${{ matrix.artifact-path }}

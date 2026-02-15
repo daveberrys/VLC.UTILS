@@ -1,0 +1,6 @@
+pypresence
+pylast
+requests
+termcolor
+textual
+pyinstaller
