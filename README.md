@@ -1,6 +1,13 @@
-# VLC.UTILS
-
-Hi! This is a sleek TUI utility that bridges VLC Media Player with Discord Rich Presence and Last.fm scrobbling.
+<div align="center">
+   <img src="icon/VLC.UTILS.png" width=150 height=150 alt="VLC.UTILS"/>
+   <h1> VLC.UTILS </h1>
+   <span> A sleek TUI utility that bridges VLC Media Player with Discord Rich Presence and Last.fm scrobbling. </span> <br/>
+   <span> Available for Windows, macOS and Linux. </span> <br/>
+   
+   <img src="https://img.shields.io/badge/Made%20with-Python-3776AB?style=flat-square&logo=python&logoColor=white"/>
+   <!-- <img src="https://img.shields.io/badge/Intergraded%20with-Last.fm-D51007?style=flat-square&logo=last.fm&logoColor=white"/>
+   <img src="https://img.shields.io/badge/Intergraded%20with-Discord%20RPC-5663f7?style=flat-square&logo=discord&logoColor=white"/> -->
+</div>
 
 ## Features
 - **Discord RPC**: Shows what you're listening to with sync timers and high-quality album art.
@@ -15,7 +22,7 @@ Hi! This is a sleek TUI utility that bridges VLC Media Player with Discord Rich 
    - Interface -> Main interfaces -> Lua -> Set a **Lua Password** (e.g., `helloworld`).
 2. **Settings**:
    - Create a config.json in the root folder (see config.json template).
-   - Enter your VLC password, Discord Client ID, and Last.fm API credentials.
+   - Enter your VLC password, Discord Application Client ID (Not your UserID), and Last.fm API credentials.
 
 ## Running the software
 ### Running the software from source
@@ -38,13 +45,15 @@ Hi! This is a sleek TUI utility that bridges VLC Media Player with Discord Rich 
 8. Create the `config.json` and configure the file.
 9. Open the software
 
-### Download the software from github releases
-1. Head on over to https://github.com/daveberrys/VLC.UTILS/releases
-2. Download the latest and download the one that's compatible with your operating system
-3. Create a new folder
-4. Move `VLC.UTILS` to the new folder
-5. Create the `config.json` and configure the file.
-6. Open the software
+### Download the software from nightly.link
+1. Download the one that's compatible with your operating system
+  - Windows: https://nightly.link/daveberrys/VLC.UTILS/workflows/building/main/VLC.UTILS-Windows.zip
+  - macOS: https://nightly.link/daveberrys/VLC.UTILS/workflows/building/main/VLC.UTILS-MacOS.zip
+  - Linux: https://nightly.link/daveberrys/VLC.UTILS/workflows/building/main/VLC.UTILS-Linux.zip
+2. Create a new folder
+3. Move `VLC.UTILS` to the new folder
+4. Create the `config.json` and configure the file.
+5. Open the software
 
 > [!CAUTION]
 > Some of the code is made by AI (Gemini 3.0 Flash). But I've taken quiz from them and checked the code and everything is fine. Don't worry about your shit being stolen.
