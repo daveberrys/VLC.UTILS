@@ -4,7 +4,7 @@
    <span> A sleek TUI utility that bridges VLC Media Player with Discord Rich Presence and Last.fm scrobbling. </span> <br/>
    <span> Available for Windows, macOS and Linux. </span> <br/>
    
-   <img src="https://img.shields.io/badge/Made%20with-Python-3776AB?style=flat-square&logo=python&logoColor=white"/>
+   <img src="https://img.shields.io/badge/Made%20with-Python-3776AB?style=flat-square&logo=python&logoColor=white"/> <br/>
    <!-- <img src="https://img.shields.io/badge/Intergraded%20with-Last.fm-D51007?style=flat-square&logo=last.fm&logoColor=white"/>
    <img src="https://img.shields.io/badge/Intergraded%20with-Discord%20RPC-5663f7?style=flat-square&logo=discord&logoColor=white"/> -->
    
