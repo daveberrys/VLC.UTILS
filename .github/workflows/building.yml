@@ -20,16 +20,16 @@ jobs:
         include:
           - os: ubuntu-latest
             os-name: Linux Ubuntu
-            artifact-path: dist/VLC-UTILS-Linux
-            artifact-name: VLC-UTILS-Linux
+            artifact-path: dist/VLC.UTILS-Linux
+            artifact-name: VLC.UTILS-Linux
           - os: windows-latest
             os-name: Windows
-            artifact-path: dist/VLC-UTILS-Windows.exe
-            artifact-name: VLC-UTILS-Windows
+            artifact-path: dist/VLC.UTILS-Windows.exe
+            artifact-name: VLC.UTILS-Windows
           - os: macos-latest
             os-name: MacOS
-            artifact-path: dist/VLC-UTILS-MacOS
-            artifact-name: VLC-UTILS-MacOS
+            artifact-path: dist/VLC.UTILS-MacOS
+            artifact-name: VLC.UTILS-MacOS
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -47,11 +47,11 @@ jobs:
 
       - name: Rename Build (Windows)
         if: runner.os == 'Windows'
-        run: move dist\VLC-UTILS.exe ${{ matrix.artifact-path }}
+        run: move dist\VLC.UTILS.exe ${{ matrix.artifact-path }}
 
       - name: Rename Build (Linux/macOS)
         if: runner.os != 'Windows'
-        run: mv dist/VLC-UTILS ${{ matrix.artifact-path }}
+        run: mv dist/VLC.UTILS ${{ matrix.artifact-path }}
 
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
