@@ -1,3 +1,4 @@
+from cgitb import small
 import time
 
 from pypresence import AioPresence
@@ -16,18 +17,24 @@ class DiscordRPC:
         except:
             self.isConnected = False
 
-    async def updateStatus(self, stats, largeImage="vlc"):
+    async def updateStatus(self, stats, largeImage="vlc", ifPaused=False):
         if not self.isConnected:
             return
         try:
+            def isItPaused(isIt):
+                if isIt:
+                    return "paused"
+                return "playing"
+
             await self.rpc.update(
                 activity_type=ActivityType.LISTENING,
                 details=f"{stats['title']}",
                 state=f"{stats['artist']}",
                 large_image=largeImage,
+                small_image=isItPaused(ifPaused),
                 large_text=f"{stats['album']}",
-                start=time.time() - stats["position"],
-                end=time.time() + (stats["length"] - stats["position"]),
+                start=time.time() - stats["position"] if not ifPaused else None,
+                end=time.time() + (stats["length"] - stats["position"]) if not ifPaused else None,
             )
         except:
             pass

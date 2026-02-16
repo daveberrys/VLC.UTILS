@@ -2,32 +2,39 @@ import os
 import re
 from time import sleep
 
-
 def formatTime(seconds):
     mins, secs = divmod(seconds, 60)
     return f"{mins:02}:{secs:02}"
 
-
 def stateThis(state):
-    stateUse = ""
     if state == "playing":
-        stateUse = ">"
+        return ">"
     elif state == "paused":
-        stateUse = "||"
+        return "||"
     else:
-        stateUse = "?"
-    return stateUse
+        return "?"
+
+def scrobbledThis(scrobble, invalidated, length):
+    threshold = int(min(length / 2, 240))
+    formattedTresh = formatTime(threshold)
+
+    if invalidated:
+        if scrobble:
+            return f"{scrobble} (Paused) ({formattedTresh})"
+        return f"{scrobble} (Invalidated) ({formattedTresh})"
+    else:
+        return f"{scrobble} ({formattedTresh})"
 
 
 def lyricsThis(lyrics, position):
     outputLines = []
     if lyrics and lyrics != "Unknown Lyrics":
-        lyrics_lines = lyrics.strip().split("\n")
+        lyricsLines = lyrics.strip().split("\n")
         timedLyrics = []
-        time_pattern = re.compile(r"\[(\d{2}):(\d{2})(?:\.\d{2})?\]\s*(.*)")
+        timePattern = re.compile(r"\[(\d{2}):(\d{2})(?:\.\d{2})?\]\s*(.*)")
 
-        for line in lyrics_lines:
-            match = time_pattern.match(line)
+        for line in lyricsLines:
+            match = timePattern.match(line)
             if match:
                 minutes = int(match.group(1))
                 seconds = int(match.group(2))
@@ -47,8 +54,10 @@ def lyricsThis(lyrics, position):
                 elif timedLyrics[i]["time"] > position:
                     break
             outputLines.append(f"{currentLyricText}")
+        elif outputLines == []:
+            outputLines.append("...")
         else:
-            outputLines.extend(lyrics_lines)
+            outputLines.extend(lyricsLines)
     else:
         outputLines.append("No lyrics available.")
     return "\n".join(outputLines)
@@ -63,6 +72,7 @@ def fetchThose(
     length,
     refreshRate,
     scrobbled,
+    invalidated,
     lyrics,
 ):
     os.system("cls" if os.name == "nt" else "clear")
@@ -74,7 +84,8 @@ def fetchThose(
     print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
     print(f"{stateThis(state)} - {formatTime(position)} / {formatTime(length)}")
     print("~~~~~~~~~~~~~~~~~~~~ LAST.FM ~~~~~~~~~~~~~~~~~~~~")
-    print(f"Scrobbled: {scrobbled}")
+    print(f"Scrobbled: {scrobbledThis(scrobbled, invalidated, length)}")
+    print(f"Invalidated: {invalidated}")
     print("~~~~~~~~~~~~~~~~~~~~  LYRIC ~~~~~~~~~~~~~~~~~~~~~")
     print(lyricsThis(lyrics, position))
 

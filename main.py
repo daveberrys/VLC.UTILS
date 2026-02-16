@@ -17,8 +17,10 @@ class VlcApp:
         self.lastTrackID = None
         self.currentArt = "vlc"
         self.scrobbled = False
-        self.isShowing = False
-        self.vlc_process = None
+        self.invalidated = False
+        self.previousState = None
+        self.trackStartTime = None
+        self.vlcProcess = None
 
     def startup(self):
         path = ""
@@ -43,7 +45,7 @@ class VlcApp:
                 path = "/snap/bin/vlc"
 
         if path:
-            self.vlc_process = subprocess.Popen([path, "--extraintf=http"])
+            self.vlcProcess = subprocess.Popen([path, "--extraintf=http"])
         else:
             print.error("VLC not found or unsupported platform.")
 
@@ -63,12 +65,15 @@ class VlcApp:
         await asyncio.sleep(0.1)
 
         while True:
-            if self.vlc_process and self.vlc_process.poll() is not None:
+            if self.vlcProcess and self.vlcProcess.poll() is not None:
                 print("VLC closed. Exiting...")
                 await self.rpc.clear()
                 return
 
-            status = getVlcStatus(self.config["vlcPassword"], self.config["vlcPort"])
+            status = getVlcStatus(
+                self.config["vlcPassword"],
+                self.config["vlcPort"]
+            )
 
             if isinstance(status, dict):
                 fetchThose(
@@ -80,43 +85,69 @@ class VlcApp:
                     status["length"],
                     self.config["refreshRate"],
                     self.scrobbled,
+                    self.invalidated,
                     status["lyrics"],
                 )
             else:
                 os.system("cls" if os.name == "nt" else "clear")
                 print(status)
 
-            if isinstance(status, dict) and status["state"] == "playing":
-                trackID = f"{status['title']} - {status['artist']}"
+            if not isinstance(status, dict):
+                await asyncio.sleep(self.config["refreshRate"])
+                continue
 
+            state = status["state"]
+            trackID = f"{status['title']} - {status['artist']}"
+
+            # if paused, immedietly invalidate 
+            # (strict, but fixes the double scrobble.)
+            if self.previousState == "playing" and state == "paused":
+                self.invalidated = True
+                await self.rpc.updateStatus(status, self.currentArt, True)
+            elif self.previousState == "paused" and state == "playing":
+                await self.rpc.updateStatus(status, self.currentArt, False)
+            elif state == "stopped":
+                await self.rpc.updateStatus(status, self.currentArt, True)
+
+            if state == "playing":
                 if trackID != self.lastTrackID:
                     self.currentArt = self.lfm.getAlbumArt(
-                        status["artist"], status["title"]
+                        status["artist"],
+                        status["title"]
                     )
+
                     self.lfm.updateNowPlaying(
-                        status["artist"], status["title"], status["album"]
+                        status["artist"],
+                        status["title"],
+                        status["album"]
                     )
-                    await self.rpc.updateStatus(status, self.currentArt)
+
+                    await self.rpc.updateStatus(status, self.currentArt, False)
+
                     self.lastTrackID = trackID
                     self.scrobbled = False
-                    self.isShowing = True
+                    self.invalidated = False
 
-                if not self.scrobbled and status["length"] > 30:
+                    self.trackStartTime = int(time.time()) - int(status["position"])
+
+                if (
+                    not self.scrobbled
+                    and not self.invalidated
+                    and status["length"] > 30
+                    and self.trackStartTime is not None
+                ):
                     threshold = min(status["length"] / 2, 240)
+
                     if status["position"] >= threshold:
                         self.lfm.scrobble(
                             status["artist"],
                             status["title"],
                             status["album"],
-                            int(time.time()),
+                            self.trackStartTime
                         )
                         self.scrobbled = True
-            else:
-                if self.isShowing:
-                    await self.rpc.clear()
-                    self.isShowing = False
-                    self.scrobbled = False
 
+            self.previousState = state
             await asyncio.sleep(self.config["refreshRate"])
 
 
@@ -128,7 +159,7 @@ def loadConfig():
         with open("VLC.UTILS.CONFIG.json", "r") as f:
             config = json.load(f)
     else:
-        print.error("Config not found.")
+        print.fatal("Config not found.")
         exit()
     return config
 
