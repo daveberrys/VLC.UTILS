@@ -45,7 +45,7 @@ class VlcApp:
         if path:
             self.vlc_process = subprocess.Popen([path, "--extraintf=http"])
         else:
-            print("VLC not found or unsupported platform.")
+            print.error("VLC not found or unsupported platform.")
 
     async def run(self):
         self.startup()

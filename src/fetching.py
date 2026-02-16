@@ -6,6 +6,7 @@ def getVlcStatus(password, port, host="localhost"):
     try:
         response = requests.get(url, auth=HTTPBasicAuth('', password))
         if response.status_code == 200:
+            response.encoding = "utf-8"
             data = response.json()
             meta = data.get('information', {}).get('category', {}).get('meta', {})
             return {
