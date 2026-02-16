@@ -14,6 +14,7 @@
 ## Features
 - **Discord RPC**: Shows what you're listening to with sync timed and album art.
 - **Last.fm**: Automatic "Now Playing" updates and threshold-based scrobbling.
+- **iTunes**: Automatically fetches the Album art from iTunes.
 - **Cross-Platform**: Ready to be compiled for Windows, macOS, and Linux.
 
 ## Setup

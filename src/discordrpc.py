@@ -35,6 +35,9 @@ class DiscordRPC:
                 large_text=f"{stats['album']}",
                 start=time.time() - stats["position"] if not ifPaused else int(time.time()),
                 end=time.time() + (stats["length"] - stats["position"]) if not ifPaused else None,
+                buttons=[
+                    {"label":"Get VLC.UTILS", "url":"https://github.com/daveberrys/VLC.UTILS"}
+                ]
             )
         except:
             pass

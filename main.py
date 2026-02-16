@@ -10,6 +10,7 @@ from src.fetching import getVlcStatus
 from src.front.simpleTerm import fetchThose
 from src.lastfm import LastFM
 import src.util.print as print
+from src.itunesArt import fetchAlbumArt
 
 class VlcApp:
     def __init__(self, config):
@@ -111,7 +112,7 @@ class VlcApp:
 
             if state == "playing":
                 if trackID != self.lastTrackID:
-                    self.currentArt = self.lfm.getAlbumArt(
+                    self.currentArt = fetchAlbumArt(
                         status["artist"],
                         status["title"]
                     )

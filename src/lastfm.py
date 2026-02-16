@@ -17,19 +17,6 @@ class LastFM:
         except:
             self.network = None
 
-    def getAlbumArt(self, artist, track):
-        artist = artist.split(",")[0].strip()
-        try:
-            trackObj = self.network.get_track(artist, track)
-            albumObj = trackObj.get_album()
-            if albumObj:
-                art = albumObj.get_cover_image(pylast.SIZE_MEGA)
-                if art:
-                    return art
-            return "vlc"
-        except:
-            return "vlc"
-
     def updateNowPlaying(self, artist, track, album):
         if not self.network:
             return
