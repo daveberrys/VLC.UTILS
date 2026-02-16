@@ -1,4 +1,3 @@
-from cgitb import small
 import time
 
 from pypresence import AioPresence
@@ -26,6 +25,7 @@ class DiscordRPC:
                     return "paused"
                 return "playing"
 
+            self.clear()
             await self.rpc.update(
                 activity_type=ActivityType.LISTENING,
                 details=f"{stats['title']}",
@@ -33,7 +33,7 @@ class DiscordRPC:
                 large_image=largeImage,
                 small_image=isItPaused(ifPaused),
                 large_text=f"{stats['album']}",
-                start=time.time() - stats["position"] if not ifPaused else None,
+                start=time.time() - stats["position"] if not ifPaused else int(time.time()),
                 end=time.time() + (stats["length"] - stats["position"]) if not ifPaused else None,
             )
         except:
