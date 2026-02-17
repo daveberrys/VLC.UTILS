@@ -14,16 +14,10 @@ def stateThis(state):
     else:
         return "?"
 
-def scrobbledThis(scrobble, invalidated, length):
+def scrobbledThis(scrobble, length):
     threshold = int(min(length / 2, 240))
     formattedTresh = formatTime(threshold)
-
-    if invalidated:
-        if scrobble:
-            return f"{scrobble} (Paused) ({formattedTresh})"
-        return f"{scrobble} (Invalidated) ({formattedTresh})"
-    else:
-        return f"{scrobble} ({formattedTresh})"
+    return f"{scrobble} ({formattedTresh})"
 
 
 def lyricsThis(lyrics, position):
@@ -72,7 +66,6 @@ def fetchThose(
     length,
     refreshRate,
     scrobbled,
-    invalidated,
     lyrics,
 ):
     os.system("cls" if os.name == "nt" else "clear")
@@ -84,8 +77,7 @@ def fetchThose(
     print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
     print(f"{stateThis(state)} - {formatTime(position)} / {formatTime(length)}")
     print("~~~~~~~~~~~~~~~~~~~~ LAST.FM ~~~~~~~~~~~~~~~~~~~~")
-    print(f"Scrobbled: {scrobbledThis(scrobbled, invalidated, length)}")
-    print(f"Invalidated: {invalidated}")
+    print(f"Scrobbled: {scrobbledThis(scrobbled, length)}")
     print("~~~~~~~~~~~~~~~~~~~~  LYRIC ~~~~~~~~~~~~~~~~~~~~~")
     print(lyricsThis(lyrics, position))
 

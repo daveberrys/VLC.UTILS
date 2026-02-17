@@ -17,8 +17,12 @@ class VlcApp:
         self.config = config
         self.lastTrackID = None
         self.currentArt = "vlc"
+
+        self.playedTime = 0
+        self.lastPosition = 0
+        self.lastHeartbeat = 0
+
         self.scrobbled = False
-        self.invalidated = False
         self.previousState = None
         self.trackStartTime = None
         self.vlcProcess = None
@@ -69,7 +73,7 @@ class VlcApp:
             if self.vlcProcess and self.vlcProcess.poll() is not None:
                 print("VLC closed. Exiting...")
                 await self.rpc.clear()
-                return
+                os._exit(0)
 
             status = getVlcStatus(
                 self.config["vlcPassword"],
@@ -86,7 +90,6 @@ class VlcApp:
                     status["length"],
                     self.config["refreshRate"],
                     self.scrobbled,
-                    self.invalidated,
                     status["lyrics"],
                 )
             else:
@@ -98,12 +101,12 @@ class VlcApp:
                 continue
 
             state = status["state"]
+            position = int(status["position"])
+            length = int(status["length"])
             trackID = f"{status['title']} - {status['artist']}"
 
-            # if paused, immedietly invalidate 
-            # (strict, but fixes the double scrobble.)
+            # funky discord RPC shit
             if self.previousState == "playing" and state == "paused":
-                self.invalidated = True
                 await self.rpc.updateStatus(status, self.currentArt, True)
             elif self.previousState == "paused" and state == "playing":
                 await self.rpc.updateStatus(status, self.currentArt, False)
@@ -124,29 +127,47 @@ class VlcApp:
                     )
 
                     await self.rpc.updateStatus(status, self.currentArt, False)
+                    self.lastHeartbeat = time.time()
 
                     self.lastTrackID = trackID
                     self.scrobbled = False
-                    self.invalidated = False
+                    self.playedTime = 0
+                    self.lastPosition = position
+                    self.trackStartTime = int(time.time()) - position
 
-                    self.trackStartTime = int(time.time()) - int(status["position"])
+                if time.time() - self.lastHeartbeat >= 15:
+                    self.lfm.updateNowPlaying(
+                        status["artist"],
+                        status["title"],
+                        status["album"]
+                    )
+                    self.lastHeartbeat = time.time()
 
-                if (
-                    not self.scrobbled
-                    and not self.invalidated
-                    and status["length"] > 30
-                    and self.trackStartTime is not None
-                ):
-                    threshold = min(status["length"] / 2, 240)
+                if self.lastTrackID == trackID:
+                    delta = position - self.lastPosition
+                    if 0 <= delta <= 3:
+                        self.playedTime += delta
+                    elif abs(delta) > 5:
+                        self.lastPosition = position
+                    self.lastPosition = position
 
-                    if status["position"] >= threshold:
-                        self.lfm.scrobble(
-                            status["artist"],
-                            status["title"],
-                            status["album"],
-                            self.trackStartTime
-                        )
-                        self.scrobbled = True
+                    if (
+                        not self.scrobbled
+                        and length > 30
+                        and self.trackStartTime is not None
+                    ):
+                        threshold = min(length / 2, 240)
+
+                        if self.playedTime >= threshold:
+                            self.lfm.scrobble(
+                                status["artist"],
+                                status["title"],
+                                status["album"],
+                                self.trackStartTime
+                            )
+                            self.scrobbled = True
+            if state == "paused" and self.previousState == "playing":
+                pass
 
             self.previousState = state
             await asyncio.sleep(self.config["refreshRate"])
